@@ -1,0 +1,22 @@
+{
+    "DatabaseSettings": {
+        "DataSource" : "<your-server>.database.windows.net",
+        "UserID" :"<your-sql-user>",
+        "Password":"<your-password>" ,
+        "InitialCatalog": "<your-db-name>"
+    },
+    "PurviewSettings": {
+        "TenantId":"<your-purview-service-tenant-id>",
+        "ApplicationId": "<your-authorized-application-id>",
+        "AuthenticationKey": "<your-authentication-key>",
+        "PurviewUri": "<your-purview-uri>",
+        "PurviewSchemaQualifiedName": "<your-purview-schema-qualified-name>",
+        "PurviewFilePathQualifiedName": "<your-purview-file-path-qualified-name>",
+        "PurviewSQLTableQualifiedName": "<your-purview-sql-table-qualified-name>"
+    },
+    "DestinationSettings": {
+        "ExternalTableName": "<name-of-your-external-table>",
+        "ExternalDataSrcName": "<name-of-your-external-data-source>",
+        "ExternalSchemaName": "<name-of-your-external-schema>" 
+    }
+}
