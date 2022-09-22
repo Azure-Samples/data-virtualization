@@ -1,6 +1,6 @@
 {
     "DatabaseSettings": {
-        "DataSource" : "<your-server>.database.windows.net",
+        "ServerName" : "<your-sql-db-or-synapse-server-name>",
         "UserID" :"<your-sql-user>",
         "Password":"<your-password>" ,
         "InitialCatalog": "<your-db-name>"
@@ -10,7 +10,6 @@
         "ApplicationId": "<your-authorized-application-id>",
         "AuthenticationKey": "<your-authentication-key>",
         "PurviewUri": "<your-purview-uri>",
-        "PurviewSchemaQualifiedName": "<your-purview-schema-qualified-name>",
         "PurviewFilePathQualifiedName": "<your-purview-file-path-qualified-name>",
         "PurviewSQLTableQualifiedName": "<your-purview-sql-table-qualified-name>"
     },

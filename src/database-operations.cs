@@ -18,7 +18,7 @@ namespace DatabaseDDL{
             }
             // remove last comma
             columnSection = columnSection.Remove(columnSection.Length-1,1);
-            string externalDataSrcName = configuration.GetSection("DestinationSettings:ExternalDataSrcName").Value + "DataSrc";
+            string externalDataSrcName = configuration.GetSection("DestinationSettings:ExternalDataSrcName").Value;
             string withStatement = $"DATA_SOURCE = [{externalDataSrcName}]";
             string sqlPrepend = "";
             if (ddl.is_shard_map_source)
@@ -27,7 +27,7 @@ namespace DatabaseDDL{
             }
             if (ddl.data_source_kind =="SQLDB")
             {
-                string dbDataSrc = configuration.GetSection("DatabaseSettings:DataSource").Value;
+                string dbDataSrc = configuration.GetSection("DatabaseSettings:ServerName").Value;
                 string url = configuration.GetSection("PurviewSettings:PurviewSQLTableQualifiedName").Value;
                 string[] url_parts = url.Split('/');
                 string dbSourceCatalog = url_parts[3];
@@ -38,7 +38,7 @@ namespace DatabaseDDL{
             else if (ddl.data_source_kind !="SQLDB") //assuming storage source, note this will only work with synapse!
             {
                 
-                string url = configuration.GetSection("PurviewSettings:PurviewSchemaQualifiedName").Value;
+                string url = configuration.GetSection("PurviewSettings:PurviewFilePathQualifiedName").Value;
                 url = DatabaseDDL.UtilsOperations.ConvertHttpToAbfssLink(url);
 
                 sqlPrepend = "if not exists(select * from sys.external_file_formats t where t.name='parquet') CREATE EXTERNAL FILE FORMAT [parquet] WITH ( FORMAT_TYPE = PARQUET);" +
@@ -61,7 +61,7 @@ namespace DatabaseDDL{
          {   
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
 
-            builder.DataSource = configuration.GetSection("DatabaseSettings:DataSource").Value; //<your_server.database.windows.net>
+            builder.DataSource = configuration.GetSection("DatabaseSettings:ServerName").Value; //<your_server.database.windows.net>
             builder.UserID = configuration.GetSection("DatabaseSettings:UserID").Value;            
             builder.Password = configuration.GetSection("DatabaseSettings:Password").Value;     
             builder.InitialCatalog = configuration.GetSection("DatabaseSettings:InitialCatalog").Value;
@@ -76,8 +76,7 @@ namespace DatabaseDDL{
 
                 SqlCommand cmd = connection.CreateCommand();
 
-                cmd.CommandText = strSqlStatement ; //@"exec sp_set_session_context @key=N'TenantId', @value=@shardingKey";
-                //cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
+                cmd.CommandText = strSqlStatement ; 
                 cmd.ExecuteNonQuery();
                 }
          }

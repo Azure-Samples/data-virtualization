@@ -13,7 +13,6 @@ namespace DatabaseDDL{
                 JsonElement valueElement = property.Value;
                 string columnName = valueElement.GetProperty("attributes").GetProperty("name").GetString();
                 string columnType = valueElement.GetProperty("attributes").GetProperty("type").GetString();
-                Console.WriteLine($"GUID:{guid}, ColumnName:{columnName}, ColumnType:{columnType}");
 
                 string convertedType = DatabaseDDL.UtilsOperations.ConvertTabularType(columnType);
                 if(resultJson == ""){
@@ -23,7 +22,7 @@ namespace DatabaseDDL{
                     resultJson += ",{" + $"\"column_name\":\"{columnName}\",\"column_type\": \"{convertedType}\"" + "}";
                 }
             }
-            string intermediateResultJson = "\"data_product_schema\" : [" + resultJson + "]";
+            string intermediateResultJson = $"\"data_product_schema\" : [{resultJson}]";
             return (intermediateResultJson);
         }
 
@@ -52,7 +51,7 @@ namespace DatabaseDDL{
                     }
                 } 
             }
-            string intermediateResultJson = "\"data_product_schema\" : [" + resultJson + "]";
+            string intermediateResultJson = $"\"data_product_schema\" : [{resultJson}]";
             return (intermediateResultJson);
         }
     }   

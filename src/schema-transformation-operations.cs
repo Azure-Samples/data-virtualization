@@ -12,8 +12,8 @@ namespace DatabaseDDL{
                 string applicationId=configuration.GetSection("PurviewSettings:ApplicationId").Value;
                 string authenticationKey=configuration.GetSection("PurviewSettings:AuthenticationKey").Value;
                 string purviewUri=configuration.GetSection("PurviewSettings:PurviewUri").Value;
-                string purviewSchemaQualifiedName=configuration.GetSection("PurviewSettings:PurviewSchemaQualifiedName").Value;
                 string purviewFilePathQualifiedName=configuration.GetSection("PurviewSettings:PurviewFilePathQualifiedName").Value;
+                string purviewSchemaQualifiedName = $"{purviewFilePathQualifiedName}#__tabular_schema";
                 string purviewSQLTableQualifiedName=configuration.GetSection("PurviewSettings:PurviewSQLTableQualifiedName").Value;
                                 
                 ClientSecretCredential cred = new ClientSecretCredential (tenantId, applicationId, authenticationKey);
@@ -52,7 +52,6 @@ namespace DatabaseDDL{
 
                 // Note Data Product Name and Domain Name are currently not used - this is reserved to future improvements
                 string finalJsonResult = "{" + $"\"data_product_name\" : \"your_sample_data_product\",\"domain_name\" : \"your_sample_data_domain\", \"data_source\" : \"{source_name}\", \"location\": \"{path}\",\"file_format\": \"{format}\", {intermediateJsonResult}" + "}";
-                Console.WriteLine(finalJsonResult);
 
                 return (finalJsonResult);
         }
@@ -62,7 +61,6 @@ namespace DatabaseDDL{
 
                 string intermediateJsonResult = DatabaseDDL.JsonOperations.ExtractSQLTableSchemaFromJson(purviewJsonResponseSchema);
                 string finalJsonResult = "{" + $"\"data_product_name\" : \"your_sample_data_product\",\"domain_name\" : \"your_sample_data_domain\", \"data_source\" : \"ElasticQueryUserDataSrc\", \"data_source_kind\" : \"SQLDB\", {intermediateJsonResult}" + "}";
-                Console.WriteLine(finalJsonResult);
                 return (finalJsonResult);
          }
 
