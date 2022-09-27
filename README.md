@@ -6,8 +6,8 @@ This sample aims to show how metadata that is gathered by Microsoft Purview when
 
 This sample includes:
 
-* Code to automate the creation of External Tables in Azure SQL Database (relies on preview feature [Elastic Query](https://learn.microsoft.com/azure/azure-sql/database/elastic-query-overview?view=azuresql))
 * Code to automate the creation of External Tables in Azure Synapse Analytics SQL Pools (works with Dedicated Pools as well as Serverless Pools)
+* Code to automate the creation of External Tables in Azure SQL Database (relies on preview feature [Elastic Query](https://learn.microsoft.com/azure/azure-sql/database/elastic-query-overview?view=azuresql))
 
 ## Getting Started
 
@@ -42,7 +42,7 @@ The solution calls Microsoft Purview's Data Catalog APIs using a Service Princip
   * Select Collections
   * Select the root collection or the collection where your dataset resides.
   * Select the Role assignments tab.
-  * Assign the 'Data Curator' role to the SP created above to access various data planes in Azure Purview:
+  * Assign the `Data Curator` role to the SP created above
 
 ### Specific steps for Scenario 1: External Table from storage
 
@@ -89,6 +89,7 @@ Make sure you have the information available in Properties and Schema tabs:
 Under the `src` folder in this repo you will find a `template.appsettings.json` file. Rename it to `appsettings.json` and configure it accordingly
 
 - the Database settings refer to your Serverless/Dedicated Synapse pool settings and the Purview settings refer to your Purview account.
+- the Purview settings refer to your Purview account, the `TenantId` is your AAD tenant id.
 - fill the Destination Settings as desired
 
 ```json
@@ -105,7 +106,7 @@ Under the `src` folder in this repo you will find a `template.appsettings.json` 
         "AuthenticationKey": "<your-authentication-key>",
         "PurviewUri": "<your-purview-uri>",
         "PurviewFilePathQualifiedName": "<your-purview-file-path-qualified-name>",
-        "PurviewSQLTableQualifiedName": ""
+        "PurviewSQLTableQualifiedName": "<your-purview-sql-table-qualified-name>"
     },
     "DestinationSettings": {
         "ExternalTableName": "<name-of-your-external-table>",
@@ -125,6 +126,7 @@ Under the `src` folder in this repo you will find a `template.appsettings.json` 
 
 **2. Set proper authorizations in the source Azure SQL Database.**
 - Authorize Azure Purview MSI to access the **source** Azure SQL Database: make Purview's MSI a `db_datareader`. Replace `<PurviewMSI>` with the name of your Purview account.
+> NOTE: SQL Authentication is also possible, detailed steps available here: [Register and Scan Azure SQL Database](https://learn.microsoft.com/azure/purview/register-scan-azure-sql-database?tabs=sql-authentication)
 
 ```sql
 CREATE USER [<PurviewMSI>] FROM EXTERNAL PROVIDER
@@ -136,7 +138,7 @@ GO
 
 **3. Create the needed credentials in both source and destination Azure SQL Databases.**
 
-- In the destination SQL DB, run the following T-SQL statements:
+- In the **destination** SQL DB, run the following T-SQL statements:
 
 ```sql
 CREATE MASTER KEY ENCRYPTION BY PASSWORD = '<strong-password>'
@@ -149,14 +151,16 @@ IF NOT EXISTS (SELECT * FROM sys.database_scoped_credentials WHERE name = '<name
 GO
 ```
 
-> Note: We assume that the name of the credential to access the source SQL Database will follow this pattern: `<name-of-your-external-data-source>Cred`. In your `appsettings.json` file you will have to specify such External Data Source name. If the external source does not already exist in the **destination** database we will create it using `<name-of-your-external-data-source>Cred` as a credential, for this reason this step is required.
-
-- Make sure the `<sqluser>` exists in the source SQL Database and has `db_datareader` rights in the source database. You can run the following statement in the **source** SQL Database:
+- Make sure the `<sqluser>` exists in the **source** SQL Database and has `db_datareader` rights in the **source** database. You can run the following statement in the **source** SQL Database:
 
 ```sql
 EXEC sp_addrolemember 'db_datareader', '<sqluser>'
 GO
 ```
+
+> Note: We assume that the name of the credential to access the source SQL Database will follow this pattern: `<name-of-your-external-data-source>Cred`. In your `appsettings.json` file you will have to specify such External Data Source name. If the external source does not already exist in the **destination** database we will create it using `<name-of-your-external-data-source>Cred` as a credential, for this reason this step is required. So as an example, if in your `appsettings.json` file the specified external data source name  is `sampleDataSource` then we will assume that we can access it from the destination database with the credential `sampleDataSourceCred`.
+
+
 
 **4. Register and Scan the SQL Database in Purview, so the source table's metadata is captured by Purview.**
 
@@ -196,7 +200,7 @@ Under the `src` folder in this repo you will find a `template.appsettings.json` 
 ```
 > Note that:
 >
-> The `PurviewFilePathQualified` name needs to be left empty for this scenario.
+> The `PurviewFilePathQualifiedName` value needs to be left empty for this scenario.
 >
 > The code assumes the following:
 > - A credential in the source database exists with name `<name-of-your-external-data-source>Cred` (refer to step 2).
